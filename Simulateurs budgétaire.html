@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur de Campagne</title>
+    <style>
+/* ✅ Réinitialisation globale */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 🌿 Background principal */
+body {
+    background-color: #F9FAFC;
+    color: #264653;
+    text-align: center;
+    padding: 20px;
+}
+
+/* 📌 Conteneur principal */
+.container {
+    width: 50%;
+    margin: auto;
+    background: #FFFFFF;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* 🏆 Titres et sous-titres */
+h1 {
+    color: #2A9D8F;
+    font-size: 26px;
+    margin-bottom: 20px;
+    animation: slideDown 0.5s ease-in-out;
+}
+
+h2 {
+    color: #264653;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+/* Effet d'apparition */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🎨 Formulaires et labels */
+label {
+    display: block;
+    font-size: 15px;
+    color: #264653;
+    margin-top: 10px;
+    text-align: left;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #264653;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #264653;
+    transition: all 0.3s ease-in-out;
+}
+
+input:focus, select:focus {
+    border-color: #2A9D8F;
+    outline: none;
+    transform: scale(1.02);
+}
+
+/* 📊 Curseur de durée stylisé */
+input[type="range"] {
+    width: 100%;
+    appearance: none;
+    height: 8px;
+    background: #ddd;
+    border-radius: 5px;
+    outline: none;
+    transition: 0.3s;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #2A9D8F;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* 🔘 Boutons */
+button {
+    background: #2A9D8F;
+    color: #FFFFFF;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(42, 157, 143, 0.3);
+}
+
+button:hover {
+    background: #21867A;
+    transform: scale(1.05);
+}
+
+/* 🏁 Résultats stylisés */
+.result {
+    margin-top: 20px;
+    padding: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.3em;
+    animation: slideIn 0.5s ease-in-out;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.result span {
+    font-weight: bold;
+    color: #2A9D8F;
+    font-size: 1.4em;
+}
+
+/* 📊 Graphiques */
+.chart-container {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 20px;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* 📊 Barre de progression */
+.progress-bar {
+    width: 100%;
+    background: #DDD;
+    height: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: #2A9D8F;
+    transition: width 0.5s ease-in-out;
+    border-radius: 5px;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Simulateur de Campagne d'Influence</h2>
+
+        <label>Budget Mensuel (€) :</label>
+        <input type="number" id="budget" placeholder="Ex: 5000" min="1">
+
+        <label>Durée de la campagne (mois) :</label>
+        <div class="slider-container">
+            <input type="range" id="duree" min="1" max="12" value="1" oninput="updateDuree()">
+            <span id="dureeValue">1 mois</span>
+        </div>
+
+        <label>Tranche d’abonnés :</label>
+        <select id="abonnes">
+            <option value="moins50k">Moins de 50K</option>
+            <option value="50k100k">50K à 100K</option>
+            <option value="100k200k">100K à 200K</option>
+            <option value="200k500k">200K à 500K</option>
+            <option value="500k700k">500K à 700K</option>
+            <option value="700k1m">700K à 1M</option>
+            <option value="1mPlus">1M et plus</option>
+        </select>
+
+        <label>Plateforme :</label>
+        <select id="plateforme">
+            <option value="youtube">YouTube</option>
+            <option value="twitch">Twitch</option>
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+        </select>
+
+        <button onclick="calculer()">Estimer</button>
+
+        <div class="result" id="resultat"></div>
+    </div>
+
+    <script>
+        function updateDuree() {
+            let duree = document.getElementById("duree").value;
+            document.getElementById("dureeValue").innerText = duree + " mois";
+        }
+
+        function calculer() {
+            let budget = parseFloat(document.getElementById("budget").value);
+            let duree = parseInt(document.getElementById("duree").value);
+            let tranche = document.getElementById("abonnes").value;
+            let plateforme = document.getElementById("plateforme").value;
+
+            if (isNaN(budget) || budget <= 0) {
+                document.getElementById("resultat").innerHTML = "<b>Veuillez entrer un budget valide.</b>";
+                return;
+            }
+
+            const tarifs = {
+                youtube: { moins50k: 200, "50k100k": 500, "100k200k": 1200, "200k500k": 3000, "500k700k": 6000, "700k1m": 8000, "1mPlus": 15000 },
+                twitch: { moins50k: 150, "50k100k": 375, "100k200k": 900, "200k500k": 2250, "500k700k": 4500, "700k1m": 6000, "1mPlus": 11250 },
+                instagram: { moins50k: 30, "50k100k": 45, "100k200k": 68, "200k500k": 101, "500k700k": 152, "700k1m": 228, "1mPlus": 342 },
+                tiktok: { moins50k: 23, "50k100k": 56, "100k200k": 90, "200k500k": 113, "500k700k": 180, "700k1m": 240, "1mPlus": 338 }
+            };
+
+            let coutOP = tarifs[plateforme][tranche];
+            let budgetTotal = budget * duree;
+            let nombreOP = Math.floor(budgetTotal / coutOP);
+            let nombreInfluenceurs = Math.ceil(nombreOP / 4);
+
+            document.getElementById("resultat").innerHTML = `
+                <b>Nombre d'OP possibles :</b> ${nombreOP} <br>
+                <b>Nombre d'influenceurs estimés :</b> ${nombreInfluenceurs} <br>
+                <b>Coût moyen par OP :</b> ${coutOP} € <br>
+                <b>Budget total utilisé :</b> ${budgetTotal} €
+            `;
+
+            genererComparateur(tranche, budgetTotal);
+        }
+
+        function genererComparateur(tranche, budget) {
+            let ctx = document.getElementById('comparateurChart').getContext('2d');
+
+            const plateformes = ["youtube", "twitch", "instagram", "tiktok"];
+            let ops = plateformes.map(p => Math.floor(budget / tarifs[p][tranche]));
+
+            if (window.myChart) {
+                window.myChart.destroy();
+            }
+
+            window.myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["YouTube", "Twitch", "Instagram", "TikTok"],
+                    datasets: [{
+                        label: 'Nombre d\'OP possibles',
+                        data: ops,
+                        backgroundColor: ['blue', 'purple', 'pink', 'green']
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+    </script>
+
+
+</body>
+</html>

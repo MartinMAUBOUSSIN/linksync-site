@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur de Campagne d'Influence</title>
+    <style>
+/* ✅ Réinitialisation globale */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 🌿 Background principal */
+body {
+    background-color: #F9FAFC;
+    color: #264653;
+    text-align: center;
+    padding: 20px;
+}
+
+/* 📌 Conteneur principal */
+.container {
+    width: 50%;
+    margin: auto;
+    background: #FFFFFF;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+}
+
+/* 🏆 Titres et sous-titres */
+h1 {
+    color: #2A9D8F;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #264653;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+/* 🎨 Formulaires et labels */
+label {
+    display: block;
+    font-size: 14px;
+    color: #264653;
+    margin-top: 10px;
+    text-align: left;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #264653;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #264653;
+}
+
+/* 📊 Barre de progression */
+.progress-bar {
+    width: 100%;
+    background: #DDD;
+    height: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: #2A9D8F;
+    transition: width 0.5s ease-in-out;
+    border-radius: 5px;
+}
+
+/* 🔘 Boutons */
+button {
+    background: #2A9D8F;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+    transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+    background: #21867A;
+}
+
+/* 📄 Étapes */
+.step {
+    display: none;
+}
+
+.step.active {
+    display: block;
+}
+
+/* 🏁 Résultats stylisés */
+.costResult {
+    margin-top: 20px;
+    padding: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.3em;
+    animation: slideIn 0.5s ease-in-out;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.result span {
+    font-weight: bold;
+    color: #2A9D8F;
+    font-size: 1.4em;
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simulateur de Campagne d'Influence</h1>
+
+        <div class="progress-bar">
+            <div id="progress" class="progress"></div>
+        </div>
+
+        <!-- Étape 1 : Plateforme et abonnés -->
+        <div class="step active" id="step1">
+            <h2>Choix de la plateforme et des abonnés</h2>
+            <label>Plateforme :</label>
+            <select id="platform" onchange="updateContentOptions()">
+                <option value="---">---</option>
+                <option value="youtube">YouTube</option>
+                <option value="twitch">Twitch</option>
+                <option value="instagram">Instagram</option>
+                <option value="tiktok">TikTok</option>
+            </select>
+
+            <label>Tranche d'abonnés :</label>
+            <select id="followerRange">
+                <option value="---">---</option>
+                <option value="50K-100K">50K à 100K</option>
+                <option value="100K-200K">100K à 200K</option>
+                <option value="200K-500K">200K à 500K</option>
+                <option value="500K-700K">500K à 700K</option>
+                <option value="700K-1M">700K à 1M</option>
+                <option value="1M+">1M+</option>
+            </select>
+
+            <button onclick="nextStep()">Suivant</button>
+        </div>
+
+        <!-- Étape 2 : Type de contenu et durée -->
+        <div class="step" id="step2">
+            <h2>Type de contenu et durée</h2>
+            <label>Type de contenu :</label>
+            <select id="contentType"></select>
+
+            <div id="durationOption" style="display: none;">
+                <label>Durée d'affichage du contenu :</label>
+                <select id="contentDuration">
+                    <option value="short">Contenu éphémère</option>
+                    <option value="long">Contenu épinglé (2 semaines)</option>
+                </select>
+            </div>
+
+            <button onclick="nextStep()">Suivant</button>
+        </div>
+
+        <!-- Étape 3 : Influenceurs et engagement -->
+        <div class="step" id="step3">
+            <h2>Influenceurs et collaborations</h2>
+            <label>Nombre d'influenceurs :</label>
+            <input type="number" id="numInfluencers" min="1">
+
+            <label>Nombre de vidéos sponsorisées :</label>
+            <input type="number" id="numVideos" min="1">
+
+            <label>Engagement des influenceurs :</label>
+            <select id="engagement">
+                <option value="low">Faible</option>
+                <option value="neutral">Neutre</option>
+                <option value="high">Élevé</option>
+                <option value="very-high">Très Élevé</option>
+            </select>
+
+            <button onclick="nextStep()">Suivant</button>
+        </div>
+
+        <!-- Étape 4 : Durée de la campagne -->
+        <div class="step" id="step4">
+            <h2>Durée de la campagne</h2>
+            <label>Durée (mois) :</label>
+            <input type="number" id="duration" min="1">
+
+            <button onclick="calculateCost()">Voir Résultat</button>
+        </div>
+
+        <!-- Étape 5 : Résultat final -->
+        <div class="step" id="step5">
+            <h2>Résultat</h2>
+            <p id="costResult"></p>
+        </div>
+    </div>
+    <script>
+const costTable = {
+    youtube: { "50K": 200, "50K-100K": 500, "100K-200K": 1200, "200K-500K": 3000, "500K-700K": 6000, "700K-1M": 8000, "1M+": 15000 },
+    twitch: { "50K": 150, "50K-100K": 375, "100K-200K": 900, "200K-500K": 2250, "500K-700K": 4500, "700K-1M": 6000, "1M+": 11250 },
+    instagram: { "50K": 30, "50K-100K": 45, "100K-200K": 68, "200K-500K": 101, "500K-700K": 152, "700K-1M": 228, "1M+": 342 },
+    tiktok: { "50K": 23, "50K-100K": 56, "100K-200K": 90, "200K-500K": 113, "500K-700K": 180, "700K-1M": 240, "1M+": 338 }
+};
+
+const contentTypeMultiplier = {
+    youtube: { video: 1, live: 0.9, shorts: 0.3 },
+    instagram: { story: 1, shorts: 1.1, post: 0.75 },
+    tiktok: { shorts: 1, live: 1.35 },
+    twitch: { live: 1 }
+};
+
+const engagementMultiplier = { low: 0.93, neutral: 1, high: 1.05, "very-high": 1.1 };
+const contentDurationMultiplier = { short: 1, long: 1.03 };
+
+let currentStep = 1;
+
+function nextStep() {
+    document.getElementById(`step${currentStep}`).classList.remove("active");
+    currentStep++;
+    document.getElementById(`step${currentStep}`).classList.add("active");
+    document.getElementById("progress").style.width = `${(currentStep - 1) * 25}%`;
+}
+
+function updateContentOptions() {
+    let platform = document.getElementById("platform").value;
+    let contentTypeSelect = document.getElementById("contentType");
+    contentTypeSelect.innerHTML = "";
+
+    Object.keys(contentTypeMultiplier[platform]).forEach(type => {
+        let option = document.createElement("option");
+        option.value = type;
+        option.text = type.charAt(0).toUpperCase() + type.slice(1);
+        contentTypeSelect.appendChild(option);
+    });
+
+    document.getElementById("durationOption").style.display = (platform === "instagram") ? "block" : "none";
+}
+
+function calculateCost() {
+    let platform = document.getElementById("platform").value;
+    let followerRange = document.getElementById("followerRange").value;
+    let numVideos = parseInt(document.getElementById("numVideos").value);
+    let numInfluencers = parseInt(document.getElementById("numInfluencers").value);
+    let engagement = document.getElementById("engagement").value;
+    let contentType = document.getElementById("contentType").value;
+    let durationType = document.getElementById("contentDuration").value || "short";
+    let durationMonths = parseInt(document.getElementById("duration").value);
+
+    if (isNaN(numVideos) || isNaN(numInfluencers) || isNaN(durationMonths) || durationMonths < 1) {
+        alert("Veuillez entrer des valeurs valides !");
+        return;
+    }
+
+    let baseCost = costTable[platform][followerRange] * numVideos;
+    let typeMultiplier = contentTypeMultiplier[platform][contentType] || 1;
+    let engagementFactor = engagementMultiplier[engagement];
+    let durationFactor = contentDurationMultiplier[durationType];
+
+    let totalCost = baseCost * typeMultiplier * engagementFactor * durationFactor;
+
+    totalCost /= durationMonths;
+
+    let videoPerInfluencer = numVideos / numInfluencers;
+    if (videoPerInfluencer >= 4) {
+        totalCost *= 0.90;
+    }
+
+    document.getElementById("costResult").innerHTML = `
+        <h3>Récapitulatif</h3>
+        <ul>
+            <li><strong>Plateforme :</strong> ${platform.charAt(0).toUpperCase() + platform.slice(1)}</li>
+            <li><strong>Tranche d'abonnés :</strong> ${followerRange}</li>
+            <li><strong>Type de contenu :</strong> ${contentType.charAt(0).toUpperCase() + contentType.slice(1)}</li>
+            <li><strong>Nombre d'influenceurs :</strong> ${numInfluencers}</li>
+            <li><strong>Nombre de vidéos sponsorisées :</strong> ${numVideos}</li>
+            <li><strong>Engagement :</strong> ${engagement.charAt(0).toUpperCase() + engagement.slice(1)}</li>
+            <li><strong>Durée de la campagne :</strong> ${durationMonths} mois</li>
+            <li><strong>Coût mensuel estimé :</strong> <span style="font-weight:bold; color:#007bff;">${totalCost.toLocaleString()} €</span></li>
+        </ul>
+    `;
+
+    nextStep();
+}
+	</script>
+</body>
+</html>
